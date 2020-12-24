@@ -1,0 +1,95 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div style="margin-left:300px;">
+        <input id="record" type="button" value="记录查询" style="margin-right:30px;" onclick="SelectRecord()"/><input id="count" type="button" value="统计查询" onclick="SelectCount()"/>
+        <table border="1" class="body-content ">
+            <thead>
+                <tr>
+                    <td>序号</td>
+                    <td>客户编号</td>
+                    <td>菜品编号</td>
+                    <td>销售日期</td>
+                    <td>数量</td>
+                    <td>售价</td>
+                    <td>总金额</td>
+                </tr>
+            </thead>
+            <tbody id="box"></tbody>
+        </table>
+
+        <table border="1" style="color:blue; border:1px solid blue;">
+            <thead>
+                <tr>
+
+                    <td>菜品编号</td>
+                    <td>菜品名</td>
+                    <td>销售次数</td>
+                    <td>单笔最高</td>
+                    <td>总金额</td>
+                </tr>
+            </thead>
+            <tbody id="boxT"></tbody>
+        </table>
+        <p>金额销售冠军是：<span>牛肉</span>,总金额：<span>750元整</span></p>
+    </div>
+</body>
+</html>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script>
+
+    function GetTime(op) {
+        var time = new Date(parseInt(op.substr(6)));
+        return time.toLocaleString();
+    }
+    function SelectRecord() {
+        $.ajax({
+            type: "post",
+            url: "/CS/SelectRecord",
+            data: "{}",
+            dataType: "json",
+            contentType: "application/json",
+            success: function (re) {
+                console.log(re);
+                $("#box tr").remove();
+                $.each(re, function (index, data) {
+                    $("#box").append("<tr><td >" + data.sid + "</td><td >" + data.cid + "</td><td >" + data.fid + "</td><td id=>" + GetTime(data.purchDate) + "</td><td>" + data.quantity + "</td><td >" + data.price + "</td><td>" + data.settlement + "</td></tr>")
+                });
+            },
+            error: function (ex) {
+                alert(ex.responseText);
+            }
+        });
+    }
+
+    function SelectCount() {
+        $.ajax({
+            type: "post",
+            url: "/CS/SelectCount",
+            data: "{}",
+            dataType: "json",
+            contentType: "application/json",
+            success: function (re) {
+                console.log(re);
+                $("#boxT tr").remove();
+                $.each(re, function (index, data) {
+                    $("#boxT").append("<tr><td >" + data.fid + "</td><td >" + data.fname + "</td><td >" + data.num + "</td><td id=>" + data.maxMony + "</td><td>" + data.countMony + "</td><tr >" )
+                });
+            },
+            error: function (ex) {
+                alert(ex.responseText);
+            }
+        });
+    }
+</script>
